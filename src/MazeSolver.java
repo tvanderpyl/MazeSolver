@@ -5,6 +5,8 @@
  */
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class MazeSolver {
@@ -54,7 +56,25 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeDFS() {
         // TODO: Use DFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
-        return null;
+        MazeCell cell = maze.getStartCell();
+        Stack<MazeCell> cells = new Stack<MazeCell>();
+        while (cell != maze.getEndCell()){
+            DFS(cell.getRow(), cell.getCol() - 1, cell, cells);
+            DFS(cell.getRow() - 1, cell.getCol(), cell, cells);
+            DFS(cell.getRow(), cell.getCol() + 1, cell, cells);
+            DFS(cell.getRow() + 1, cell.getCol(), cell, cells);
+            cell = cells.pop();
+        }
+
+        return getSolution();
+    }
+
+    public void DFS(int row, int col, MazeCell cell, Stack cells){
+        if (maze.isValidCell(row, col)){
+            cells.push(maze.getCell(row, col));
+            maze.getCell(row, col).setExplored(true);
+            maze.getCell(row, col).setParent(cell);
+        }
     }
 
     /**
@@ -64,7 +84,25 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeBFS() {
         // TODO: Use BFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
-        return null;
+        MazeCell cell = maze.getStartCell();
+        Queue<MazeCell> cells = new LinkedList<MazeCell>();
+        while (cell != maze.getEndCell()){
+            BFS(cell.getRow() + 1, cell.getCol(), cell, cells);
+            BFS(cell.getRow(), cell.getCol() + 1, cell, cells);
+            BFS(cell.getRow() - 1, cell.getCol(), cell, cells);
+            BFS(cell.getRow(), cell.getCol() - 1, cell, cells);
+            cell = cells.remove();
+        }
+
+        return getSolution();
+    }
+
+    public void BFS(int row, int col, MazeCell cell, Queue cells){
+        if (maze.isValidCell(row, col)){
+            cells.offer(maze.getCell(row, col));
+            maze.getCell(row, col).setExplored(true);
+            maze.getCell(row, col).setParent(cell);
+        }
     }
 
     public static void main(String[] args) {
