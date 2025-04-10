@@ -29,13 +29,16 @@ public class MazeSolver {
      * the parents to determine the solution
      * @return An arraylist of MazeCells to visit in order
      */
+
+    // This returns the solution by tracing through the parents and returning the new array
     public ArrayList<MazeCell> getSolution() {
         // TODO: Get the solution from the maze
-        // Should be from start to end cells
+        // Used to reverse parent order for the solution
         ArrayList<MazeCell> path = new ArrayList<MazeCell>();
         Stack<MazeCell> revert = new Stack<MazeCell>();
         MazeCell nextCell = maze.getEndCell();
         // Put the reversed path into a stack
+        // Adds all parents to stack
         while (nextCell != maze.getStartCell()){
             revert.push(nextCell);
             nextCell = nextCell.getParent();
@@ -56,23 +59,31 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeDFS() {
         // TODO: Use DFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
+        // Uses stack to keep track of where to go next
         MazeCell cell = maze.getStartCell();
         Stack<MazeCell> cells = new Stack<MazeCell>();
         while (cell != maze.getEndCell()){
-            DFS(cell.getRow(), cell.getCol() - 1, cell, cells);
+            // Checks West
             DFS(cell.getRow() - 1, cell.getCol(), cell, cells);
-            DFS(cell.getRow(), cell.getCol() + 1, cell, cells);
+            // South
+            DFS(cell.getRow(), cell.getCol() - 1, cell, cells);
+            // East
             DFS(cell.getRow() + 1, cell.getCol(), cell, cells);
+            // North
+            DFS(cell.getRow(), cell.getCol() + 1, cell, cells);
             cell = cells.pop();
         }
 
         return getSolution();
     }
 
+    // Helper method that does the checking and adding or cells
     public void DFS(int row, int col, MazeCell cell, Stack cells){
         if (maze.isValidCell(row, col)){
+            // If valid then add to stack to check
             cells.push(maze.getCell(row, col));
             maze.getCell(row, col).setExplored(true);
+            // Switch parent so it can be traced later
             maze.getCell(row, col).setParent(cell);
         }
     }
@@ -84,12 +95,17 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeBFS() {
         // TODO: Use BFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
+        // Uses a queue instead of stack
         MazeCell cell = maze.getStartCell();
         Queue<MazeCell> cells = new LinkedList<MazeCell>();
         while (cell != maze.getEndCell()){
+            // Checks North
             BFS(cell.getRow() + 1, cell.getCol(), cell, cells);
+            // East
             BFS(cell.getRow(), cell.getCol() + 1, cell, cells);
+            // South
             BFS(cell.getRow() - 1, cell.getCol(), cell, cells);
+            // West
             BFS(cell.getRow(), cell.getCol() - 1, cell, cells);
             cell = cells.remove();
         }
@@ -97,10 +113,13 @@ public class MazeSolver {
         return getSolution();
     }
 
+    // Helper method to check and add the cells
     public void BFS(int row, int col, MazeCell cell, Queue cells){
         if (maze.isValidCell(row, col)){
+            // Add to queue to check later
             cells.offer(maze.getCell(row, col));
             maze.getCell(row, col).setExplored(true);
+            // Switches parent cell to be tracked later
             maze.getCell(row, col).setParent(cell);
         }
     }
